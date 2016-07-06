@@ -1,6 +1,6 @@
 ---
 
-env:
+memcached_env:
  RUNLEVEL: 1
 
 memcached_redhat_pkgs:
@@ -11,4 +11,3 @@ memcached_ubuntu_pkgs:
   - python-selinux
   - memcached
 
-  

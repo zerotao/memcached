@@ -6,19 +6,19 @@
 - include: debian.yml
   when: ansible_os_family == "Debian"
 
-- name: update the memcached configuration file
-  template: src=memcached_redhat.j2 dest=/etc/sysconfig/memcached
-  notify:
-   - restart memcached
-  when: ansible_os_family == "RedHat"
+- name: get the current max open file descriptors
+  shell: cat /proc/sys/fs/file-max
+  register: file_max
 
-- name: update the memcached configuration file 
-  template: src=memcached_debian.j2 dest=/etc/memcached.conf
-  notify: restart memcached
-  when: ansible_os_family == "Debian"
-
-- name: set the max open file descriptors
-  sysctl: name=fs.file-max value={{ memcached_fs_file_max }} state=present
+- name: set the max open file descriptors (if larger then current)
+  sysctl:
+    name: fs.file-max
+    value: '{{ memcached_fs_file_max }}'
+    state: present
+  when: '{{ memcached_fs_file_max > file_max.stdout|int }}'
 
 - name: start and enable the memcached service
-  service: name=memcached state=started enabled=yes
+  service:
+    name: memcached
+    state: started
+    enabled: yes
