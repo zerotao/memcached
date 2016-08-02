@@ -20,5 +20,5 @@
 - name: start and enable the memcached service
   service:
     name: memcached
-    state: started
+    state: restarted
     enabled: yes
